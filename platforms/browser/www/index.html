@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="msapplication-tap-highlight" content="no" />
+  <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+  <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *"
+  />
+
+  <link rel="stylesheet" type="text/css" href="css/index.css" />
+  <title>Hello World</title>
+</head>
+
+<body>
+  <div class="app">
+    <h1>PhoneGap123</h1>
+    <input type="button" value="getCurrentHeading" id="btn1">
+    <input type="button" value="watchHeading" id="btn2">
+    <input type="button" value="clearWatch" id="btn3">
+    
+    <div>网络环境<span id="s1">空</span></div>
+    <div id="div1">空</div>
+    <div id="arrow" style="width:100px;height:100px;background: #399">box</div>
+
+  </div>
+  <script type="text/javascript" src="cordova.js"></script>
+  <script>
+    document.addEventListener('deviceready', function () {
+
+      // deviceready ==设备准备好了
+
+      var btn1=document.querySelector('#btn1');
+      var btn2=document.querySelector('#btn2');
+      var btn3=document.querySelector('#btn3');
+      var div1=document.querySelector('#div1');
+      var s1=document.querySelector('#s1');
+      var arrow=document.querySelector('#arrow');
+
+      //网络状态
+      var networkState = navigator.network.connection.type;
+      s1.innerHTML=networkState;
+
+      
+      btn1.addEventListener('click',function(){
+        function onSuccess(heading) {
+            // heading 集合
+            // alert('Heading: ' + heading.magneticHeading);//角度
+            div1.innerHTML=heading.magneticHeading;
+        };
+
+        function onError(error) {
+            alert('CompassError: '+error.code);
+        };
+          
+        navigator.compass.getCurrentHeading(onSuccess, onError);
+
+      },false);
+
+      var watchID=null;
+      btn2.addEventListener('click',function(){
+        function onSuccess(heading) {
+            var element = document.getElementById('heading');
+            div1.innerHTML=heading.magneticHeading;
+            arrow.style.webkitTransform='rotate('+ parseInt(heading.magneticHeading) +'deg)'
+        };
+
+        function onError(compassError) {
+            alert('Compass error: ' + compassError.code);
+        };
+          
+        var options = { frequency: 100 };		//每隔3秒更新一次
+          
+        watchID = navigator.compass.watchHeading(onSuccess, onError, options);
+      },false);
+      
+      btn3.addEventListener('click',function(){
+        navigator.compass.clearWatch(watchID);
+      },false)
+
+    }, false);
+  </script>
+</body>
+
+</html>
